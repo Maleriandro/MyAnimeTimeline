@@ -30,20 +30,30 @@ export const prepareVisJsDataset = (listEntries: ListEntry[]): VisJsDataset => {
 
         let start: Date | null = null;
         let end: Date | null = null;
-        if (entryStatus.start_date && entryStatus.finish_date
-            && !entryStatus.start_date.startsWith('0000-00-00')
-            && !entryStatus.finish_date?.startsWith('0000-00-00')) {
+
+
+        if (entryStatus.start_date && !entryStatus.start_date.startsWith('0000-00-00')) {
+            //If start date exists, use it
             start = new Date(entryStatus.start_date);
-            end = new Date(entryStatus.finish_date);
-            if (end < start) [start, end] = [end, start];
-            if (start.toUTCString() === end.toUTCString()) {
-                if (isNaN(start.getTime())) start = new Date(entryStatus.updated_at);
-                end = moment(start).add(1, 'day').toDate();
-            }
         } else {
+            //If start date does not exist, use updated_at
             start = new Date(entryStatus.updated_at);
+        }
+
+        if (entryStatus.finish_date && !entryStatus.finish_date.startsWith('0000-00-00')) {
+            //If finish date exists, use it
+            end = new Date(entryStatus.finish_date);
+        } else {
+            //If finish date does not exist, use start + 1 day
             end = moment(start).add(1, 'day').toDate();
-            end.setDate(start.getDate() + 1);
+        }
+
+        //If end date is before start date, swap them
+        if (end < start) [start, end] = [end, start];
+
+        //If start date is the same as end date, add 1 day to end date
+        if (start.toUTCString() === end.toUTCString()) {
+            end = moment(start).add(1, 'day').toDate();
         }
 
         const record = {
