@@ -64,6 +64,7 @@ function App() {
             <div id="visualization">
                 {visualisationStatus !== '' && <div className="vis-status">{visualisationStatus}</div>}
             </div>
+            <div id="tooltip" className="custom-tooltip"></div>
         </div>
     );
 }
