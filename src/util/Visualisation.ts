@@ -86,38 +86,40 @@ export const drawVisJsTimeline = (dataset: VisJsDataset, displayType: DisplayTyp
 
     const timeline = new vis.Timeline(container, items, options);
 
-    timeline.on('itemover', (properties: { item: number | string, event: MouseEvent }) => {
-        const itemId = properties.item;
+    if (displayType === DisplayType.Range) {
+        timeline.on('itemover', (properties: { item: number | string, event: MouseEvent }) => {
+            const itemId = properties.item;
 
-        // Get the item element
-        let itemElement = properties.event.target as HTMLElement;
-        //Sometimes the event target is not the item itself, but a parent element
-        if (!itemElement.classList.contains('vis-item-content')) {
-            itemElement = itemElement.getElementsByClassName('vis-item-content')[0] as HTMLElement;
-        }
+            // Get the item element
+            let itemElement = properties.event.target as HTMLElement;
+            //Sometimes the event target is not the item itself, but a parent element
+            if (!itemElement.classList.contains('vis-item-content')) {
+                itemElement = itemElement.getElementsByClassName('vis-item-content')[0] as HTMLElement;
+            }
 
-    
-        const parentElement = itemElement.parentElement;
-      
-        // Check if the content is overflowing (this means the text is too long to fit in the box)
-        if (parentElement && itemElement.clientWidth > parentElement.clientWidth) {
+        
+            const parentElement = itemElement.parentElement;
+        
+            // Check if the content is overflowing (this means the text is too long to fit in the box)
+            if (parentElement && itemElement.clientWidth > parentElement.clientWidth) {
+                const tooltip = document.getElementById('tooltip') as HTMLDivElement;
+                tooltip.style.display = 'block';
+                tooltip.innerText = items.get(itemId)?.content || '';
+            }
+        });
+        
+        // Listen for mouseMove event to position the tooltip
+        container.addEventListener('mousemove', (event: MouseEvent) => {
             const tooltip = document.getElementById('tooltip') as HTMLDivElement;
-            tooltip.style.display = 'block';
-            tooltip.innerText = items.get(itemId)?.content || '';
-        }
-      });
-      
-      // Listen for mouseMove event to position the tooltip
-      container.addEventListener('mousemove', (event: MouseEvent) => {
-        const tooltip = document.getElementById('tooltip') as HTMLDivElement;
-        tooltip.style.left = `${event.pageX + 10}px`;
-        tooltip.style.top = `${event.pageY + 10}px`;
-      });
-      
-      // Listen for mouseOut event to hide the tooltip
-      timeline.on('itemout', () => {
-        const tooltip = document.getElementById('tooltip') as HTMLDivElement;
-        tooltip.style.display = 'none';
-      });
+            tooltip.style.left = `${event.pageX + 10}px`;
+            tooltip.style.top = `${event.pageY + 10}px`;
+        });
+        
+        // Listen for mouseOut event to hide the tooltip
+        timeline.on('itemout', () => {
+            const tooltip = document.getElementById('tooltip') as HTMLDivElement;
+            tooltip.style.display = 'none';
+        });
+    }
 
 };
