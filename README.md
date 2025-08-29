@@ -1,10 +1,8 @@
 # MyAnimeTimeline
 
-[![Chat on Discord](https://img.shields.io/discord/696033621986770957?label=Chat%20on%20Discord)](https://discord.gg/HT4ttdQ)
-
 A small web app that maps titles from a MyAnimeList account to a timeline. 
 
-Available at [https://hosting.kawaiidesu.me/MyAnimeTimeline/](https://hosting.kawaiidesu.me/MyAnimeTimeline/).
+Available at [https://maleriandro.github.io/MyAnimeTimeline](https://maleriandro.github.io/MyAnimeTimeline).
 
 Tools used:
 
