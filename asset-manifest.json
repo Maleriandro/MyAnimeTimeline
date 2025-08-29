@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/MyAnimeTimeline/static/css/main.39e6e995.chunk.css",
+    "main.js": "/MyAnimeTimeline/static/js/main.6a83055c.chunk.js",
+    "main.js.map": "/MyAnimeTimeline/static/js/main.6a83055c.chunk.js.map",
+    "runtime-main.js": "/MyAnimeTimeline/static/js/runtime-main.42f707c6.js",
+    "runtime-main.js.map": "/MyAnimeTimeline/static/js/runtime-main.42f707c6.js.map",
+    "static/js/2.7390038d.chunk.js": "/MyAnimeTimeline/static/js/2.7390038d.chunk.js",
+    "static/js/2.7390038d.chunk.js.map": "/MyAnimeTimeline/static/js/2.7390038d.chunk.js.map",
+    "index.html": "/MyAnimeTimeline/index.html",
+    "precache-manifest.a3b8f60ae88afb3b562d447fc8e03664.js": "/MyAnimeTimeline/precache-manifest.a3b8f60ae88afb3b562d447fc8e03664.js",
+    "service-worker.js": "/MyAnimeTimeline/service-worker.js",
+    "static/css/main.39e6e995.chunk.css.map": "/MyAnimeTimeline/static/css/main.39e6e995.chunk.css.map",
+    "static/js/2.7390038d.chunk.js.LICENSE.txt": "/MyAnimeTimeline/static/js/2.7390038d.chunk.js.LICENSE.txt",
+    "static/js/main.6a83055c.chunk.js.LICENSE.txt": "/MyAnimeTimeline/static/js/main.6a83055c.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.42f707c6.js",
+    "static/js/2.7390038d.chunk.js",
+    "static/css/main.39e6e995.chunk.css",
+    "static/js/main.6a83055c.chunk.js"
+  ]
+}
