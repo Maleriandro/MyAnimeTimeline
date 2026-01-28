@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/MyAnimeTimeline/precache-manifest.a3b8f60ae88afb3b562d447fc8e03664.js"
+  "/MyAnimeTimeline/precache-manifest.0929de008c1194a0c5c403e9a1a86926.js"
 );
 
 self.addEventListener('message', (event) => {
