@@ -35,13 +35,6 @@ function App() {
         setVisualisationStatus(`Loading ${username}'s ${listType} list...`);
         getMalListEntries(username, listType as ListType)
             .then(listEntries => {
-                const getTitle = (entry: ListEntry) => {
-                    if (titleLang === TitleLang.English && entry.node.alternative_titles?.en) {
-                        return entry.node.alternative_titles.en;
-                    }
-                    return entry.node.title;
-                };
-
                 const dataset = prepareVisJsDataset(listEntries, titleLang as TitleLang);
                 console.log(`Showing ${dataset.length} entries.`)
 
