@@ -18,14 +18,6 @@ export enum EntryStatus {
     Watching = 'watching',
 }
 
-interface PagingResponse {
-    data: ListEntry[];
-    paging?: {
-        next?: string;
-        previous?: string;
-    }
-}
-
 export interface ListEntry {
     node: {
         id: number;
@@ -33,6 +25,11 @@ export interface ListEntry {
         main_picture: {
             medium: string;
             large: string;
+        };
+        alternative_titles: {
+            synonyms: string[];
+            en: string;
+            ja: string;
         };
     };
     list_status: {

@@ -16,6 +16,7 @@ export const getConfigFromUrlParameters = () => {
         username: getUrlParameter('username'),
         listType: getUrlParameter('list_type'),
         displayType: getUrlParameter('display_type'),
+        titleLang: getUrlParameter('title_lang'),
     } as const;
 };
 

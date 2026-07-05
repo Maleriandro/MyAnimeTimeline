@@ -13,12 +13,18 @@ export enum DisplayType {
     Range = 'range',
 }
 
+export enum TitleLang {
+    Romaji = 'romaji',
+    English = 'english',
+}
+
 export const SupportedDisplayTypes = [DisplayType.Box, DisplayType.Range];
+export const SupportedTitleLangs = [TitleLang.Romaji, TitleLang.English];
 
 type VisJsRecord = { id: number; content: string; start: string; end: string }
 type VisJsDataset = VisJsRecord[]
 
-export const prepareVisJsDataset = (listEntries: ListEntry[]): VisJsDataset => {
+export const prepareVisJsDataset = (listEntries: ListEntry[], titleLang: TitleLang): VisJsDataset => {
     const dataset: VisJsDataset = [];
     for (let i = 0; i < listEntries.length; i++) {
         const entry = listEntries[i];
@@ -55,9 +61,13 @@ export const prepareVisJsDataset = (listEntries: ListEntry[]): VisJsDataset => {
             end = moment(start).add(1, 'day').toDate();
         }
 
+        const title = titleLang === TitleLang.English && entryDetails.alternative_titles.en
+            ? entryDetails.alternative_titles.en
+            : entryDetails.title;
+
         const record = {
             id: i,
-            content: entryDetails.title,
+            content: title,
             start: formatDate(start),
             end: formatDate(end),
         };

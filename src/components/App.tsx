@@ -9,8 +9,8 @@ import './App.css';
 import {Links} from './Misc';
 import {Controls} from './Controls';
 import {getConfigFromUrlParameters} from '../util/Utils';
-import {ListType, SupportedListTypes, getMalListEntries} from '../util/MalApi';
-import {DisplayType, drawVisJsTimeline, prepareVisJsDataset, SupportedDisplayTypes} from '../util/Visualisation';
+import {ListType, SupportedListTypes, getMalListEntries, ListEntry} from '../util/MalApi';
+import {DisplayType, drawVisJsTimeline, prepareVisJsDataset, SupportedDisplayTypes, TitleLang, SupportedTitleLangs} from '../util/Visualisation';
 
 
 function App() {
@@ -18,7 +18,7 @@ function App() {
     const [visualisationStatus, setVisualisationStatus] = React.useState('Enter your MAL credentials!');
 
     useEffect(() => {
-        let {username, listType, displayType} = getConfigFromUrlParameters();
+        let {username, listType, displayType, titleLang} = getConfigFromUrlParameters();
         if (!username || !listType || !displayType) return;
         if (!SupportedListTypes.includes(listType as ListType)) {
             setVisualisationStatus(`Invalid list type: ${listType}. Try resubmitting.`);
@@ -28,11 +28,21 @@ function App() {
             setVisualisationStatus(`Invalid list type: ${listType}. Try resubmitting.`);
             return;
         }
+        if (!SupportedTitleLangs.includes(titleLang as TitleLang)) {
+            titleLang = TitleLang.Romaji;
+        }
 
         setVisualisationStatus(`Loading ${username}'s ${listType} list...`);
         getMalListEntries(username, listType as ListType)
             .then(listEntries => {
-                const dataset = prepareVisJsDataset(listEntries);
+                const getTitle = (entry: ListEntry) => {
+                    if (titleLang === TitleLang.English && entry.node.alternative_titles?.en) {
+                        return entry.node.alternative_titles.en;
+                    }
+                    return entry.node.title;
+                };
+
+                const dataset = prepareVisJsDataset(listEntries, titleLang as TitleLang);
                 console.log(`Showing ${dataset.length} entries.`)
 
                 drawVisJsTimeline(dataset, displayType as DisplayType);

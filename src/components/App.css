@@ -102,6 +102,11 @@ p:last-child {
     padding: 10px 0 0 5px;
 }
 
+.title-lang-wrapper {
+    padding: 10px 5px 0 0;
+    width: 100%;
+}
+
 .radio-column {
     background-color: #fafafa;
     border: solid 1px #f0f0f0;
