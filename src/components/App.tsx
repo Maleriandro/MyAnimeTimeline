@@ -18,7 +18,7 @@ function App() {
     const [visualisationStatus, setVisualisationStatus] = React.useState('Enter your MAL credentials!');
 
     useEffect(() => {
-        let {username, listType, cap, displayType} = getConfigFromUrlParameters();
+        let {username, listType, displayType} = getConfigFromUrlParameters();
         if (!username || !listType || !displayType) return;
         if (!SupportedListTypes.includes(listType as ListType)) {
             setVisualisationStatus(`Invalid list type: ${listType}. Try resubmitting.`);
@@ -33,10 +33,9 @@ function App() {
         getMalListEntries(username, listType as ListType)
             .then(listEntries => {
                 const dataset = prepareVisJsDataset(listEntries);
-                const dataset_subset = cap > 0 ? dataset.slice(0, cap) : dataset;
-                console.log(`Showing ${dataset_subset.length} out of ${dataset.length} entries.`)
+                console.log(`Showing ${dataset.length} entries.`)
 
-                drawVisJsTimeline(dataset_subset, displayType as DisplayType);
+                drawVisJsTimeline(dataset, displayType as DisplayType);
                 setVisualisationStatus('');
             })
             .catch(error => setVisualisationStatus(`Error: ${error.message}`));

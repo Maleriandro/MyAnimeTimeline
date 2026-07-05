@@ -9,12 +9,11 @@ import {formatDate} from './Utils';
 import {EntryStatus, ListEntry} from './MalApi';
 
 export enum DisplayType {
-    Point = 'point',
     Box = 'box',
     Range = 'range',
 }
 
-export const SupportedDisplayTypes = [DisplayType.Point, DisplayType.Box, DisplayType.Range];
+export const SupportedDisplayTypes = [DisplayType.Box, DisplayType.Range];
 
 type VisJsRecord = { id: number; content: string; start: string; end: string }
 type VisJsDataset = VisJsRecord[]

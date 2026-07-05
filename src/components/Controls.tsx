@@ -14,7 +14,6 @@ export const Controls = React.memo(() => {
     const config = getConfigFromUrlParameters();
     const defaultUsername = config.username;
     const defaultListType = config.listType === ListType.Manga ? ListType.Manga : ListType.Anime;
-    const defaultCapAt1k = config.cap === 1000;
     let defaultDisplayType = config.displayType;
     if (!SupportedDisplayTypes.includes(defaultDisplayType as DisplayType)) {
         defaultDisplayType = DisplayType.Box;
@@ -22,7 +21,6 @@ export const Controls = React.memo(() => {
 
     const [username, setUsername] = React.useState(defaultUsername);
     const [listType, setListType] = React.useState(defaultListType);
-    const [capAt1k, setCapAt1k] = React.useState(defaultCapAt1k);
     const [displayType, setDisplayType] = React.useState(defaultDisplayType);
 
     return (
@@ -42,19 +40,11 @@ export const Controls = React.memo(() => {
                     <input type="radio" id="radio-manga" name="list_type" value={ListType.Manga}
                            checked={listType === ListType.Manga} onChange={() => setListType(ListType.Manga)}/>
                     <label htmlFor="radio-manga">Manga list</label>
-                    <hr/>
-                    <input type="checkbox" id="checkbox-cap" name="cap" value="1000"
-                           checked={capAt1k} onChange={e => setCapAt1k(e.target.checked)}/>
-                    <label htmlFor="checkbox-cap">Cap at 1000 titles</label>
                 </div>
             </div>
             <div className="radio-column-wrapper">
                 <div className="radio-column">
                     <div className="column-title">Display type:</div>
-                    <input type="radio" id="radio-point" name="display_type" value={DisplayType.Point}
-                           checked={displayType === DisplayType.Point}
-                           onChange={() => setDisplayType(DisplayType.Point)}/>
-                    <label htmlFor="radio-point">Point</label>
                     <input type="radio" id="radio-box" name="display_type" value={DisplayType.Box}
                            checked={displayType === DisplayType.Box}
                            onChange={() => setDisplayType(DisplayType.Box)}/>
