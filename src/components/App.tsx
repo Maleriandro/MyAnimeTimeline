@@ -8,14 +8,11 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import './App.css';
 import {Links} from './Misc';
 import {Controls} from './Controls';
-import {getConfigFromUrlParameters} from '../util/Utils';
 import {ListEntry, ListType, getMalListEntries} from '../util/MalApi';
 import {
     DisplayType,
     drawVisJsTimeline,
     prepareVisJsDataset,
-    SupportedDisplayTypes,
-    SupportedTitleLangs,
     TitleLang
 } from '../util/Visualisation';
 
