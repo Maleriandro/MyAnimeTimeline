@@ -3,51 +3,49 @@
  * @copyright 2020
  * @license MIT
  */
-import React, {useEffect} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 
 import './App.css';
 import {Links} from './Misc';
 import {Controls} from './Controls';
 import {getConfigFromUrlParameters} from '../util/Utils';
-import {ListType, getMalListEntries, ListEntry} from '../util/MalApi';
-import {DisplayType, drawVisJsTimeline, prepareVisJsDataset, SupportedDisplayTypes, TitleLang, SupportedTitleLangs} from '../util/Visualisation';
+import {ListEntry, ListType, getMalListEntries} from '../util/MalApi';
+import {
+    DisplayType,
+    drawVisJsTimeline,
+    prepareVisJsDataset,
+    SupportedDisplayTypes,
+    SupportedTitleLangs,
+    TitleLang
+} from '../util/Visualisation';
 
 
 function App() {
-    const [controlsVisible, setControlsVisible] = React.useState(true);
-    const [visualisationStatus, setVisualisationStatus] = React.useState('Enter your MAL credentials!');
+    const [controlsVisible, setControlsVisible] = useState(true);
+    const [visualisationStatus, setVisualisationStatus] = useState('Enter your MAL username!');
 
     const {
         username: defaultUsername,
         listType: defaultListType,
         displayType: defaultDisplayType,
         titleLang: defaultTitleLang,
-    } = React.useMemo(() => {
-        const config = getConfigFromUrlParameters();
-        let listType = config.listType === ListType.Manga ? ListType.Manga : ListType.Anime;
-        let displayType = config.displayType as DisplayType;
-        if (!SupportedDisplayTypes.includes(displayType as DisplayType)) {
-            displayType = DisplayType.Box;
-        }
-        let titleLang = config.titleLang as TitleLang;
-        if (!SupportedTitleLangs.includes(titleLang as TitleLang)) {
-            titleLang = TitleLang.Romaji;
-        }
+    } = useMemo(() => {
         return {
-            username: config.username,
-            listType,
-            displayType,
-            titleLang,
+            username: undefined,
+            listType: ListType.Anime,
+            displayType: DisplayType.Box,
+            titleLang: TitleLang.Romaji,
         };
     }, []);
 
-    const [username, setUsername] = React.useState<string | undefined>(defaultUsername);
-    const [listType, setListType] = React.useState<ListType>(defaultListType);
-    const [displayType, setDisplayType] = React.useState<DisplayType>(defaultDisplayType);
-    const [titleLang, setTitleLang] = React.useState<TitleLang>(defaultTitleLang);
-    const [listEntries, setListEntries] = React.useState<ListEntry[] | null>(null);
+    const [username, setUsername] = useState<string | undefined>(defaultUsername);
+    const [listType, setListType] = useState<ListType>(defaultListType);
+    const [displayType, setDisplayType] = useState<DisplayType>(defaultDisplayType);
+    const [titleLang, setTitleLang] = useState<TitleLang>(defaultTitleLang);
+    const [listEntries, setListEntries] = useState<ListEntry[] | null>(null);
+    const [selectedTitle, setSelectedTitle] = useState<string | null>(null);
 
-    const doFetch = React.useCallback(() => {
+    const doFetch = useCallback(() => {
         if (!username || !listType) return;
         setVisualisationStatus(`Loading ${username}'s ${listType} list...`);
         setListEntries(null);
@@ -61,32 +59,26 @@ function App() {
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
-        const url = new URL(window.location.href);
-        if(username) url.searchParams.set('username', username);
-        url.searchParams.set('list_type', listType);
-        url.searchParams.set('display_type', displayType);
-        url.searchParams.set('title_lang', titleLang);
-        window.history.pushState({}, '', url.toString());
         doFetch();
     };
 
-    useEffect(() => {
-        if(defaultUsername) doFetch();
-    }, [defaultUsername, doFetch]);
+    const handleSelect = useCallback((title: string | null) => {
+        setSelectedTitle(title);
+    }, []);
 
     useEffect(() => {
         if (listEntries) {
             const dataset = prepareVisJsDataset(listEntries, titleLang as TitleLang);
             if (dataset.length > 0) {
-                drawVisJsTimeline(dataset, displayType as DisplayType);
+                drawVisJsTimeline(dataset, displayType as DisplayType, handleSelect);
                 setVisualisationStatus(''); // Clear any previous status
             } else {
                 setVisualisationStatus('No completed entries found in the list.');
             }
         }
-    }, [listEntries, displayType, titleLang]);
+    }, [listEntries, displayType, titleLang, handleSelect]);
 
-    const toggleControls = React.useCallback(() => setControlsVisible(prevState => !prevState), []);
+    const toggleControls = useCallback(() => setControlsVisible(prevState => !prevState), []);
 
     return (
         <div className="App">
@@ -111,6 +103,7 @@ function App() {
                         titleLang={titleLang}
                         setTitleLang={setTitleLang}
                         handleSubmit={handleSubmit}
+                        selectedTitle={selectedTitle}
                     />
                 </div>
                 }

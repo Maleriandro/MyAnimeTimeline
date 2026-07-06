@@ -21,7 +21,7 @@ export enum TitleLang {
 export const SupportedDisplayTypes = [DisplayType.Box, DisplayType.Range];
 export const SupportedTitleLangs = [TitleLang.Romaji, TitleLang.English];
 
-type VisJsRecord = { id: number; content: string; start: string; end: string, type?: 'box' };
+type VisJsRecord = { id: number; content: string; start: string; end: string, type?: 'box', className?: string };
 type VisJsDataset = VisJsRecord[];
 
 export const prepareVisJsDataset = (listEntries: ListEntry[], titleLang: TitleLang): VisJsDataset => {
@@ -71,6 +71,11 @@ export const prepareVisJsDataset = (listEntries: ListEntry[], titleLang: TitleLa
 
         if (isSingleDay || !hasFinishDate) {
             record.type = 'box';
+            record.className = 'single-day-item';
+        }
+
+        if (entryDetails.num_episodes <= 3) {
+            record.className = record.className ? `${record.className} one-episode-anime` : 'one-episode-anime';
         }
 
         dataset.push(record);
@@ -87,7 +92,7 @@ const tooltipMouseMoveListener = (event: MouseEvent) => {
     }
 };
 
-export const drawVisJsTimeline = (dataset: VisJsDataset, displayType: DisplayType) => {
+export const drawVisJsTimeline = (dataset: VisJsDataset, displayType: DisplayType, onSelect: (title: string | null) => void) => {
     const container = document.getElementById('visualization');
 
     if (!container) {
@@ -110,7 +115,17 @@ export const drawVisJsTimeline = (dataset: VisJsDataset, displayType: DisplayTyp
     };
 
     timeline = new vis.Timeline(container, items, options);
-
+    timeline.on('select', (properties: { items: (string | number)[] }) => {
+        if (properties.items.length > 0) {
+            const selectedItem = items.get(properties.items[0]) as VisJsRecord;
+            if (selectedItem) {
+                onSelect(selectedItem.content);
+            }
+        } else {
+            onSelect(null);
+        }
+    });
+    
     if (displayType === DisplayType.Range) {
         timeline.on('itemover', (properties: { item: number | string, event: MouseEvent }) => {
             const itemId = properties.item;

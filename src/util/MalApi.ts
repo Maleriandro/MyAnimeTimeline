@@ -31,6 +31,7 @@ export interface ListEntry {
             en: string;
             ja: string;
         };
+        num_episodes: number;
     };
     list_status: {
         status: string;

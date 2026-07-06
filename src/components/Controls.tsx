@@ -4,9 +4,9 @@
  * @license MIT
  */
 import React from 'react';
-
-import {ListType} from '../util/MalApi';
-import {DisplayType, TitleLang} from '../util/Visualisation';
+import { SegmentedControl } from './SegmentedControl';
+import { ListType } from '../util/MalApi';
+import { DisplayType, TitleLang } from '../util/Visualisation';
 
 interface ControlsProps {
     username?: string;
@@ -18,6 +18,7 @@ interface ControlsProps {
     titleLang: TitleLang;
     setTitleLang: (titleLang: TitleLang) => void;
     handleSubmit: (event: React.FormEvent) => void;
+    selectedTitle: string | null;
 }
 
 export const Controls: React.FC<ControlsProps> = React.memo(props => {
@@ -31,56 +32,64 @@ export const Controls: React.FC<ControlsProps> = React.memo(props => {
         titleLang,
         setTitleLang,
         handleSubmit,
+        selectedTitle,
     } = props;
 
     return (
-        <form onSubmit={handleSubmit}>
-            <div className="username-input">
-                <label htmlFor="username">Enter your username:</label>
-                <input type="text" id="username" name="username" required placeholder="e.g. Timbo_KZ"
-                       value={username ?? ''} onChange={e => setUsername(e.target.value)}/>
-            </div>
-
-            <div className="radio-column-wrapper">
-                <div className="radio-column">
-                    <div className="column-title">List type:</div>
-                    <input type="radio" id="radio-anime" name="list_type" value={ListType.Anime}
-                           checked={listType === ListType.Anime} onChange={() => setListType(ListType.Anime)}/>
-                    <label htmlFor="radio-anime">Anime list</label>
-                    <input type="radio" id="radio-manga" name="list_type" value={ListType.Manga}
-                           checked={listType === ListType.Manga} onChange={() => setListType(ListType.Manga)}/>
-                    <label htmlFor="radio-manga">Manga list</label>
+        <>
+            {selectedTitle && (
+                <div className="selected-title-info">
+                    <div className="column-title">Selected:</div>
+                    <p>{selectedTitle}</p>
                 </div>
-            </div>
-            <div className="radio-column-wrapper">
-                <div className="radio-column">
-                    <div className="column-title">Display type:</div>
-                    <input type="radio" id="radio-box" name="display_type" value={DisplayType.Box}
-                           checked={displayType === DisplayType.Box}
-                           onChange={() => setDisplayType(DisplayType.Box)}/>
-                    <label htmlFor="radio-box">Box</label>
-                    <input type="radio" id="radio-range" name="display_type" value={DisplayType.Range}
-                           checked={displayType === DisplayType.Range}
-                           onChange={() => setDisplayType(DisplayType.Range)}/>
-                    <label htmlFor="radio-range">Range (duration)</label>
+            )}
+            <form onSubmit={handleSubmit}>
+                <div className="username-input">
+                    <label htmlFor="username">Enter your username:</label>
+                    <input type="text" id="username" name="username" required placeholder="e.g. Timbo_KZ"
+                           value={username ?? ''} onChange={e => setUsername(e.target.value)}/>
+                    <input className="go" type="submit" value="Go!"/>
                 </div>
-            </div>
 
-            <div className="title-lang-wrapper">
-                <div className="radio-column">
-                    <div className="column-title">Title language:</div>
-                    <input type="radio" id="radio-romaji" name="title_lang" value={TitleLang.Romaji} // name="title_lang"
-                           checked={titleLang === TitleLang.Romaji}
-                           onChange={() => setTitleLang(TitleLang.Romaji)}/>
-                    <label htmlFor="radio-romaji">Romaji</label>
-                    <input type="radio" id="radio-english" name="title_lang" value={TitleLang.English} // name="title_lang"
-                           checked={titleLang === TitleLang.English}
-                           onChange={() => setTitleLang(TitleLang.English)}/>
-                    <label htmlFor="radio-english">English</label>
+                <div className="control-group-wrapper">
+                    <div className="control-group">
+                        <div className="column-title">List type:</div>
+                        <SegmentedControl
+                            name="listType"
+                            value={listType}
+                            onChange={setListType}
+                            options={[
+                                { value: ListType.Anime, label: 'Anime' },
+                                { value: ListType.Manga, label: 'Manga' },
+                            ]}
+                        />
+                    </div>
+                    <div className="control-group">
+                        <div className="column-title">Display type:</div>
+                        <SegmentedControl
+                            name="displayType"
+                            value={displayType}
+                            onChange={setDisplayType}
+                            options={[
+                                { value: DisplayType.Box, label: 'Box' },
+                                { value: DisplayType.Range, label: 'Range' },
+                            ]}
+                        />
+                    </div>
+                    <div className="control-group">
+                        <div className="column-title">Title language:</div>
+                        <SegmentedControl
+                            name="titleLang"
+                            value={titleLang}
+                            onChange={setTitleLang}
+                            options={[
+                                { value: TitleLang.Romaji, label: 'Romaji' },
+                                { value: TitleLang.English, label: 'English' },
+                            ]}
+                        />
+                    </div>
                 </div>
-            </div>
-
-            <input className="go" type="submit" value="Go!"/>
-        </form>
+            </form>
+        </>
     );
 });
