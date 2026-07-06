@@ -21,8 +21,8 @@ export enum TitleLang {
 export const SupportedDisplayTypes = [DisplayType.Box, DisplayType.Range];
 export const SupportedTitleLangs = [TitleLang.Romaji, TitleLang.English];
 
-type VisJsRecord = { id: number; content: string; start: string; end: string }
-type VisJsDataset = VisJsRecord[]
+type VisJsRecord = { id: number; content: string; start: string; end: string, type?: 'box' };
+type VisJsDataset = VisJsRecord[];
 
 export const prepareVisJsDataset = (listEntries: ListEntry[], titleLang: TitleLang): VisJsDataset => {
     const dataset: VisJsDataset = [];
@@ -38,26 +38,23 @@ export const prepareVisJsDataset = (listEntries: ListEntry[], titleLang: TitleLa
 
 
         if (entryStatus.start_date && !entryStatus.start_date.startsWith('0000-00-00')) {
-            //If start date exists, use it
             start = new Date(entryStatus.start_date);
         } else {
-            //If start date does not exist, use updated_at
             start = new Date(entryStatus.updated_at);
         }
 
-        if (entryStatus.finish_date && !entryStatus.finish_date.startsWith('0000-00-00')) {
-            //If finish date exists, use it
-            end = new Date(entryStatus.finish_date);
+        const hasFinishDate = entryStatus.finish_date && !entryStatus.finish_date.startsWith('0000-00-00');
+        if (hasFinishDate) {
+            end = new Date(entryStatus.finish_date as string);
         } else {
-            //If finish date does not exist, use start + 1 day
             end = moment(start).add(1, 'day').toDate();
         }
 
-        //If end date is before start date, swap them
         if (end < start) [start, end] = [end, start];
 
-        //If start date is the same as end date, add 1 day to end date
-        if (start.toUTCString() === end.toUTCString()) {
+        const isSingleDay = start.toUTCString() === end.toUTCString();
+
+        if (isSingleDay) {
             end = moment(start).add(1, 'day').toDate();
         }
 
@@ -65,15 +62,29 @@ export const prepareVisJsDataset = (listEntries: ListEntry[], titleLang: TitleLa
             ? entryDetails.alternative_titles.en
             : entryDetails.title;
 
-        const record = {
+        const record: VisJsRecord = {
             id: i,
             content: title,
             start: formatDate(start),
             end: formatDate(end),
         };
+
+        if (isSingleDay || !hasFinishDate) {
+            record.type = 'box';
+        }
+
         dataset.push(record);
     }
     return dataset.sort((a, b) => b.end.localeCompare(a.end));
+};
+
+let timeline: any | null = null;
+const tooltipMouseMoveListener = (event: MouseEvent) => {
+    const tooltip = document.getElementById('tooltip') as HTMLDivElement;
+    if (tooltip) {
+        tooltip.style.left = `${event.pageX + 10}px`;
+        tooltip.style.top = `${event.pageY + 10}px`;
+    }
 };
 
 export const drawVisJsTimeline = (dataset: VisJsDataset, displayType: DisplayType) => {
@@ -82,6 +93,11 @@ export const drawVisJsTimeline = (dataset: VisJsDataset, displayType: DisplayTyp
     if (!container) {
         console.error('Container not found!');
         return;
+    }
+
+    if (timeline) {
+        timeline.destroy();
+        container.removeEventListener('mousemove', tooltipMouseMoveListener);
     }
 
     const items = new vis.DataSet(dataset);
@@ -93,7 +109,7 @@ export const drawVisJsTimeline = (dataset: VisJsDataset, displayType: DisplayTyp
         type: displayType,
     };
 
-    const timeline = new vis.Timeline(container, items, options);
+    timeline = new vis.Timeline(container, items, options);
 
     if (displayType === DisplayType.Range) {
         timeline.on('itemover', (properties: { item: number | string, event: MouseEvent }) => {
@@ -106,24 +122,20 @@ export const drawVisJsTimeline = (dataset: VisJsDataset, displayType: DisplayTyp
                 itemElement = itemElement.getElementsByClassName('vis-item-content')[0] as HTMLElement;
             }
 
-        
+
             const parentElement = itemElement.parentElement;
-        
+
             // Check if the content is overflowing (this means the text is too long to fit in the box)
             if (parentElement && itemElement.clientWidth > parentElement.clientWidth) {
                 const tooltip = document.getElementById('tooltip') as HTMLDivElement;
                 tooltip.style.display = 'block';
-                tooltip.innerText = items.get(itemId)?.content || '';
+                tooltip.innerText = (items.get(itemId) as VisJsRecord)?.content || '';
             }
         });
-        
+
         // Listen for mouseMove event to position the tooltip
-        container.addEventListener('mousemove', (event: MouseEvent) => {
-            const tooltip = document.getElementById('tooltip') as HTMLDivElement;
-            tooltip.style.left = `${event.pageX + 10}px`;
-            tooltip.style.top = `${event.pageY + 10}px`;
-        });
-        
+        container.addEventListener('mousemove', tooltipMouseMoveListener);
+
         // Listen for mouseOut event to hide the tooltip
         timeline.on('itemout', () => {
             const tooltip = document.getElementById('tooltip') as HTMLDivElement;

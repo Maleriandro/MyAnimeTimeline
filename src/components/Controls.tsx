@@ -6,34 +6,39 @@
 import React from 'react';
 
 import {ListType} from '../util/MalApi';
-import {getConfigFromUrlParameters} from '../util/Utils';
-import {DisplayType, SupportedDisplayTypes, TitleLang, SupportedTitleLangs} from '../util/Visualisation';
+import {DisplayType, TitleLang} from '../util/Visualisation';
 
+interface ControlsProps {
+    username?: string;
+    setUsername: (username: string) => void;
+    listType: ListType;
+    setListType: (listType: ListType) => void;
+    displayType: DisplayType;
+    setDisplayType: (displayType: DisplayType) => void;
+    titleLang: TitleLang;
+    setTitleLang: (titleLang: TitleLang) => void;
+    handleSubmit: (event: React.FormEvent) => void;
+}
 
-export const Controls = React.memo(() => {
-    const config = getConfigFromUrlParameters();
-    const defaultUsername = config.username;
-    const defaultListType = config.listType === ListType.Manga ? ListType.Manga : ListType.Anime;
-    let defaultTitleLang = config.titleLang;
-    let defaultDisplayType = config.displayType;
-    if (!SupportedDisplayTypes.includes(defaultDisplayType as DisplayType)) {
-        defaultDisplayType = DisplayType.Box;
-    }
-    if (!SupportedTitleLangs.includes(defaultTitleLang as TitleLang)) {
-        defaultTitleLang = TitleLang.Romaji;
-    }
-
-    const [username, setUsername] = React.useState(defaultUsername);
-    const [listType, setListType] = React.useState(defaultListType);
-    const [displayType, setDisplayType] = React.useState(defaultDisplayType);
-    const [titleLang, setTitleLang] = React.useState(defaultTitleLang);
+export const Controls: React.FC<ControlsProps> = React.memo(props => {
+    const {
+        username,
+        setUsername,
+        listType,
+        setListType,
+        displayType,
+        setDisplayType,
+        titleLang,
+        setTitleLang,
+        handleSubmit,
+    } = props;
 
     return (
-        <form>
+        <form onSubmit={handleSubmit}>
             <div className="username-input">
                 <label htmlFor="username">Enter your username:</label>
                 <input type="text" id="username" name="username" required placeholder="e.g. Timbo_KZ"
-                       value={username} onChange={e => setUsername(e.target.value)}/>
+                       value={username ?? ''} onChange={e => setUsername(e.target.value)}/>
             </div>
 
             <div className="radio-column-wrapper">

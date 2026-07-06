@@ -155,10 +155,18 @@ p:last-child {
 }
 
 .vis-status {
-    line-height: 100vh;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    padding: 20px;
+    border-radius: 8px;
+    z-index: 100;
     text-align: center;
-    font-size: 2em;
-    color: #aaa;
+    font-size: 1.5em;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
 }
 
 .custom-tooltip {
