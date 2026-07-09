@@ -172,3 +172,13 @@ p:last-child {
 .vis-item.one-episode-anime {
     font-weight: bold;
 }
+
+.vis-item.single-day-item {
+    border-color: #ff9800;
+    background-color: #ffe0b2;
+}
+
+.vis-item.no-finish-date-item {
+    border-color: #757575;
+    background-color: #e0e0e0;
+}

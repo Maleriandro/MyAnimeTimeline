@@ -52,7 +52,7 @@ export const prepareVisJsDataset = (listEntries: ListEntry[], titleLang: TitleLa
 
         if (end < start) [start, end] = [end, start];
 
-        const isSingleDay = start.toUTCString() === end.toUTCString();
+        const isSingleDay = hasFinishDate && start.toUTCString() === end.toUTCString();
 
         if (isSingleDay) {
             end = moment(start).add(1, 'day').toDate();
@@ -69,9 +69,12 @@ export const prepareVisJsDataset = (listEntries: ListEntry[], titleLang: TitleLa
             end: formatDate(end),
         };
 
-        if (isSingleDay || !hasFinishDate) {
+        if (isSingleDay) {
             record.type = 'box';
             record.className = 'single-day-item';
+        } else if (!hasFinishDate) {
+            record.type = 'box';
+            record.className = 'no-finish-date-item';
         }
 
         if (entryDetails.num_episodes <= 3) {
